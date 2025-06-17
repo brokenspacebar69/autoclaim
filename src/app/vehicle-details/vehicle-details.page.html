@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Vehicle Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" *ngIf="vehicle">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ vehicle.plate }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Make:</strong> {{ vehicle.make }}</p>
+      <p><strong>Model:</strong> {{ vehicle.model }}</p>
+      <p><strong>Color:</strong> {{ vehicle.color }}</p>
+      <p><strong>Impound Date:</strong> {{ vehicle.impoundDate }}</p>
+      <p><strong>Impound Location:</strong> {{ vehicle.location }}</p>
+    </ion-card-content>
+  </ion-card>
+  <ion-button expand="block" [routerLink]="['/claim-process', vehicle.plate]">Claim Process</ion-button>
+  <ion-button expand="block" routerLink="/notifications">View Notifications</ion-button>
+</ion-content>

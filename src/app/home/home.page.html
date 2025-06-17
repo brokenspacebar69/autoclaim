@@ -1,20 +1,48 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title class="ion-text-center">AutoClaim</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+<ion-content>
+  <ion-searchbar [(ngModel)]="searchTerm" placeholder="Search vehicle" class="rounded"></ion-searchbar>
+  
+  <div style="display:flex; gap:12px; margin: 20px 0;">
+    <ion-button expand="block" shape="round" fill="outline">Find Impound</ion-button>
+    <ion-button expand="block" shape="round" fill="outline">My Vehicles</ion-button>
   </div>
+  
+  <ion-card *ngFor="let vehicle of filteredVehicles" class="rounded" (click)="goToVehicleDetails(vehicle)">
+    <ion-item lines="none" class="rounded">
+      <ion-avatar slot="start">
+        <ion-icon name="car-outline" size="large"></ion-icon>
+      </ion-avatar>
+      <ion-label>
+        <h2 style="font-weight: bold;">{{ vehicle.plate }}</h2>
+        <p>{{ vehicle.location }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-card>  
 </ion-content>
+
+<ion-footer>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home" routerLink="/home">
+      <ion-icon name="home-outline"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="impounds" routerLink="/impounds">
+      <ion-icon name="alert-outline"></ion-icon>
+      <ion-label>Impounds</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="vehicles" routerLink="/vehicles">
+      <ion-icon name="car-outline"></ion-icon>
+      <ion-label>Vehicles</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="settings" routerLink="/profile">
+      <ion-icon name="settings-outline"></ion-icon>
+      <ion-label>Settings</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>
+

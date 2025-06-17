@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+    </ion-buttons>
+    <ion-title class="ion-text-center">Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div style="display:flex; flex-direction:column; align-items:center; margin-top:32px;">
+    <ion-avatar style="width:100px; height:100px; margin-bottom:12px;">
+      <ion-icon name="person-circle-outline" size="large"></ion-icon>
+    </ion-avatar>
+    <h2 style="font-weight:bold; font-size:1.5rem;">{{ user.name }}</h2>
+    <p style="margin-bottom:18px;">{{ user.email }}</p>
+    <ion-button expand="block" shape="round" fill="outline" style="width:70%;">Edit Profile</ion-button>
+  </div>
+  <ion-card class="rounded" style="margin-top:36px;">
+    <ion-card-header>
+      <ion-card-title>Claimed Vehicles</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let vehicle of user.claimedVehicles" class="rounded">
+          {{ vehicle }}
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <ion-button expand="block" color="danger" shape="round" style="margin:36px auto 0; width:70%;">Log Out</ion-button>
+</ion-content>
+
+<ion-footer>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home" routerLink="/home">
+      <ion-icon name="home-outline"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="impounds" routerLink="/impounds">
+      <ion-icon name="alert-outline"></ion-icon>
+      <ion-label>Impounds</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="vehicles" routerLink="/vehicles">
+      <ion-icon name="car-outline"></ion-icon>
+      <ion-label>Vehicles</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="settings" routerLink="/profile">
+      <ion-icon name="settings-outline"></ion-icon>
+      <ion-label>Settings</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

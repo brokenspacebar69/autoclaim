@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+        </ion-buttons>
+    <ion-title>Impounds</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <google-map
+    height="350px"
+    width="100%"
+    [center]="center"
+    [zoom]="13"
+  >
+    <map-marker
+      *ngIf="userMarker"
+      [position]="userMarker"
+      [label]="'You'"
+      [icon]="{
+        url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+      }"
+    ></map-marker>
+    <map-marker
+      *ngFor="let impound of impoundLots"
+      [position]="impound.position"
+      [label]="impound.name"
+    ></map-marker>
+  </google-map>
+
+  <ion-list>
+    <ion-list-header>
+      Nearby Impounding Areas
+    </ion-list-header>
+    <ion-item *ngFor="let lot of nearbyImpounds">
+      <ion-label>
+        <h2>{{ lot.name }}</h2>
+        <p *ngIf="lot.distance !== undefined">{{ lot.distance | number: '1.1-2' }} km away</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="nearbyImpounds.length === 0">
+      <ion-label>No nearby impounding areas found.</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home" routerLink="/home">
+      <ion-icon name="home-outline"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="impounds" routerLink="/impounds">
+      <ion-icon name="alert-outline"></ion-icon>
+      <ion-label>Impounds</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="vehicles" routerLink="/vehicles">
+      <ion-icon name="car-outline"></ion-icon>
+      <ion-label>Vehicles</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="settings" routerLink="/profile">
+      <ion-icon name="settings-outline"></ion-icon>
+      <ion-label>Settings</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

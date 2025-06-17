@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Claim Process</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-progress-bar value="0.33"></ion-progress-bar>
+  <h3>Step 1: Upload Documents</h3>
+  <ion-item>
+    <ion-label>Valid ID</ion-label>
+    <input type="file" />
+  </ion-item>
+  <ion-item>
+    <ion-label>OR/CR</ion-label>
+    <input type="file" />
+  </ion-item>
+  <ion-item>
+    <ion-label>Authorization (if not the owner)</ion-label>
+    <input type="file" />
+  </ion-item>
+  <ion-button expand="block">Next</ion-button>
+</ion-content>
