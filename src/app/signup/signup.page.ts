@@ -1,45 +1,46 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, ToastController } from '@ionic/angular';
-import { Auth, createUserWithEmailAndPassword, UserCredential } from '@angular/fire/auth';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { FirestoreService } from '../services/firestore.service';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
-  standalone: false 
+  standalone: false
 })
 export class SignupPage {
-  signupForm: FormGroup;
+  signupForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private navCtrl: NavController,
     private toastCtrl: ToastController,
-    private auth: Auth,
-    private firestore: Firestore
+    private firestoreService: FirestoreService
   ) {
     this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
+      name: ['', Validators.required],
       password: ['', Validators.required],
-      role: ['', Validators.required]
+      role: ['', Validators.required] // Add a role select in your HTML!
     });
   }
 
   async onSignup() {
-    const { email, password, role } = this.signupForm.value;
+    const signupData = {
+      email: this.signupForm.value.email,
+      name: this.signupForm.value.name,
+      role: this.signupForm.value.role,
+      password: this.signupForm.value.password, // Never store plain text passwords in real apps!
+      timestamp: new Date()
+    };
+    console.log('Attempting to sign up:', signupData);
     try {
-      const userCredential: UserCredential = await createUserWithEmailAndPassword(this.auth, email, password);
-      // Save extra user info (role) to Firestore
-      await setDoc(doc(this.firestore, 'users', userCredential.user.uid), {
-        email,
-        role
-      });
-      this.showToast('Signup successful! Please login.');
+      await this.firestoreService.addSignupData(signupData);
+      await this.showToast('Signup info recorded! ');
       this.navCtrl.navigateRoot('/login');
     } catch (error: any) {
-      this.showToast(error.message);
+      await this.showToast('Signup failed: ' + error.message);
     }
   }
 
@@ -47,7 +48,7 @@ export class SignupPage {
     const toast = await this.toastCtrl.create({
       message,
       duration: 2000,
-      color: 'danger'
+      color: 'success'
     });
     toast.present();
   }

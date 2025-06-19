@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, ToastController } from '@ionic/angular';
-import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { FirestoreService } from '../services/firestore.service';
 
 @Component({
   selector: 'app-login',
@@ -17,8 +16,7 @@ export class LoginPage {
     private fb: FormBuilder,
     private navCtrl: NavController,
     private toastCtrl: ToastController,
-    private auth: Auth,
-    private firestore: Firestore
+    private firestoreService: FirestoreService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -27,37 +25,27 @@ export class LoginPage {
   }
 
   async onLogin() {
-    const { email, password } = this.loginForm.value;
+    const loginData = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password, // Do NOT store passwords in real apps!
+      timestamp: new Date()
+    };
+
     try {
-      const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-      // Fetch role from Firestore
-      const userDoc = await getDoc(doc(this.firestore, 'users', userCredential.user.uid));
-      const userData = userDoc.data();
-      if (userData) {
-        // Store user info as needed (session/local storage/etc)
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        // Redirect based on role
-        if (userData['role'] === 'owner') {
-          this.navCtrl.navigateRoot('/home');
-        } else if (userData['role'] === 'authority') {
-          this.navCtrl.navigateRoot('/impounds');
-        } else {
-          this.showToast('Unknown role');
-        }        
-      } else {
-        this.showToast('User role not found!');
-      }
+      await this.firestoreService.addLoginData(loginData);
+      await this.showToast('Login info recorded! (Demo only)');
+      // After logging in, redirect to Home
+      this.navCtrl.navigateRoot('/home');
     } catch (error: any) {
-      this.showToast(error.message);
+      await this.showToast('Login failed: ' + error.message);
     }
   }
-  
 
   async showToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,
       duration: 2000,
-      color: 'danger'
+      color: 'success'
     });
     toast.present();
   }
