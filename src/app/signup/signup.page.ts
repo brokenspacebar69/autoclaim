@@ -22,7 +22,7 @@ export class SignupPage {
       email: ['', [Validators.required, Validators.email]],
       name: ['', Validators.required],
       password: ['', Validators.required],
-      role: ['', Validators.required] // Add a role select in your HTML!
+      role: ['', Validators.required] 
     });
   }
 
@@ -31,7 +31,7 @@ export class SignupPage {
       email: this.signupForm.value.email,
       name: this.signupForm.value.name,
       role: this.signupForm.value.role,
-      password: this.signupForm.value.password, // Never store plain text passwords in real apps!
+      password: this.signupForm.value.password, 
       timestamp: new Date()
     };
     console.log('Attempting to sign up:', signupData);

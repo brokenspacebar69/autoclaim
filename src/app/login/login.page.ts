@@ -27,14 +27,14 @@ export class LoginPage {
   async onLogin() {
     const loginData = {
       email: this.loginForm.value.email,
-      password: this.loginForm.value.password, // Do NOT store passwords in real apps!
+      password: this.loginForm.value.password, 
       timestamp: new Date()
     };
 
     try {
       await this.firestoreService.addLoginData(loginData);
-      await this.showToast('Login info recorded! (Demo only)');
-      // After logging in, redirect to Home
+      await this.showToast('Login info recorded!');
+      
       this.navCtrl.navigateRoot('/home');
     } catch (error: any) {
       await this.showToast('Login failed: ' + error.message);
