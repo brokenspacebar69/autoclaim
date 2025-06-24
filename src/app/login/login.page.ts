@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../auth/auth.service';
 import { NavController, ToastController } from '@ionic/angular';
+import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { FirestoreService } from '../services/firestore.service';
+
 
 @Component({
   selector: 'app-login',
@@ -10,43 +13,44 @@ import { FirestoreService } from '../services/firestore.service';
   standalone: false
 })
 export class LoginPage {
-  loginForm: FormGroup;
+  loginForm: FormGroup; 
 
   constructor(
     private fb: FormBuilder,
     private navCtrl: NavController,
     private toastCtrl: ToastController,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private auth: Auth,
+    private authService: AuthService,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
   }
 
   async onLogin() {
-    const loginData = {
-      email: this.loginForm.value.email,
-      password: this.loginForm.value.password, 
-      timestamp: new Date()
-    };
+    const { email, password } = this.loginForm.value;
+  try {
+    const cred = await signInWithEmailAndPassword(this.auth, email, password);
 
-    try {
-      await this.firestoreService.addLoginData(loginData);
-      await this.showToast('Login info recorded!');
-      
+    await this.firestoreService.addUser({
+      uid: cred.user.uid,
+      email,
+      lastLogin: new Date()
+    });
+    await this.firestoreService.addLogin({
+      uid: cred.user.uid,
+      email,
+      loginTime: new Date()
+    });
       this.navCtrl.navigateRoot('/home');
     } catch (error: any) {
-      await this.showToast('Login failed: ' + error.message);
+      this.showToast('Login failed: ' + error.message);
     }
   }
 
-  async showToast(message: string) {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000,
-      color: 'success'
-    });
-    toast.present();
+  showToast(message: string) {
+    this.toastCtrl.create({ message, duration: 2000, color: 'danger' }).then(t => t.present());
   }
 }

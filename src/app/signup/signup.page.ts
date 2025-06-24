@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../auth/auth.service';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { NavController, ToastController } from '@ionic/angular';
 import { FirestoreService } from '../services/firestore.service';
 
@@ -10,46 +12,51 @@ import { FirestoreService } from '../services/firestore.service';
   standalone: false
 })
 export class SignupPage {
-  signupForm!: FormGroup;
+  signupForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
+    private authService: AuthService,
     private navCtrl: NavController,
-    private toastCtrl: ToastController,
-    private firestoreService: FirestoreService
+    private auth: Auth,
+    private firestoreService: FirestoreService,
+    private toastCtrl: ToastController
   ) {
     this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      name: ['', Validators.required],
       password: ['', Validators.required],
-      role: ['', Validators.required] 
+      name: ['', Validators.required],    
+      role: ['', Validators.required]
     });
   }
 
   async onSignup() {
-    const signupData = {
-      email: this.signupForm.value.email,
-      name: this.signupForm.value.name,
-      role: this.signupForm.value.role,
-      password: this.signupForm.value.password, 
-      timestamp: new Date()
-    };
-    console.log('Attempting to sign up:', signupData);
-    try {
-      await this.firestoreService.addSignupData(signupData);
-      await this.showToast('Signup info recorded! ');
+      const { email, name, password, role } = this.signupForm.value;
+  
+      try {
+        const cred = await createUserWithEmailAndPassword(this.auth, email, password);
+        await this.firestoreService.addUser({
+          uid: cred.user.uid,
+          email,
+          name,
+          role,
+          timestamp: new Date()
+        });
+        await this.firestoreService.addSignup({
+          uid: cred.user.uid,
+          email,
+          name,
+          role,
+          timestamp: new Date()
+        });
+      this.showToast('Signup successful! Please login.');
       this.navCtrl.navigateRoot('/login');
     } catch (error: any) {
-      await this.showToast('Signup failed: ' + error.message);
+      this.showToast('Signup failed: ' + error.message);
     }
   }
 
-  async showToast(message: string) {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000,
-      color: 'success'
-    });
-    toast.present();
+  showToast(message: string) {
+    this.toastCtrl.create({ message, duration: 2000, color: 'success' }).then(t => t.present());
   }
 }
